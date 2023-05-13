@@ -16,7 +16,7 @@ void mapa (char c [3][3]);
 void introducir_jugada(char c [3][3]);
 int quien_gana (char c[3][3]);
 void introducir_ia(char c[3][3]);
-int minimax(char c[3][3], int depth, bool isMaximizingPlayer);
+int minimax(char c[3][3], int profundidad, bool jugador);
 
 int main(){
     char c [3][3];
@@ -26,6 +26,8 @@ int main(){
 }
 
 void loop(char c[3][3]){
+    system("cls");
+    mapa(c);
     int contador = 0;
     int ganador = 2; // Mover la declaración e inicialización aquí
 
@@ -192,69 +194,68 @@ void mapa (char c [3][3]){
     printf("\n\n");
 }
 
-void introducir_ia(char c [3][3]) {
-    int bestScore = -100;
-    int bestI, bestJ;
+void introducir_ia(char c[3][3]) {
+    int mejorPuntaje = -100;
+    int mejorI, mejorJ;
 
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
             if (c[i][j] != 'X' && c[i][j] != 'O') {
                 char tmp = c[i][j];
                 c[i][j] = 'X';
-                int score = minimax(c, 100, false);
+                int puntaje = minimax(c, 9, false);
                 c[i][j] = tmp;
-                if (score > bestScore) {
-                    bestScore = score;
-                    bestI = i;
-                    bestJ = j;
+                if (puntaje > mejorPuntaje) {
+                    mejorPuntaje = puntaje;
+                    mejorI = i;
+                    mejorJ = j;
                 }
             }
         }
     }
-
-    c[bestI][bestJ] = 'O';
+    c[mejorI][mejorJ] = 'O';
 }
 
-int minimax(char c[3][3], int depth, bool isMaximizing) {
-    int score = quien_gana(c);
-    if (score == 0) {
-        return 10 - depth;
+int minimax(char tablero[3][3], int profundidad, bool jugador) {
+    int resultado = quien_gana(tablero);
+    if (resultado == 0) {
+        return 10 - profundidad;
     }
-    if (score == 1) {
-        return depth - 10;
+    if (resultado == 1) {
+        return profundidad - 10;
     }
-    if (score == -1) {
+    if (resultado == -1) {
         return 0;
     }
 
-    if (isMaximizing) {
-        int bestScore = -100;
+    if (jugador) {
+        int mejorPuntaje = -100;
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                if (c[i][j] != 'X' && c[i][j] != 'O') {
-                    char tmp = c[i][j];
-                    c[i][j] = 'X';
-                    int score = minimax(c, depth + 1, false);
-                    c[i][j] = tmp;
-                    bestScore = max(bestScore, score);
+                if (tablero[i][j] != 'X' && tablero[i][j] != 'O') {
+                    char tmp = tablero[i][j];
+                    tablero[i][j] = 'X';
+                    int puntaje = minimax(tablero, profundidad + 1, false);
+                    tablero[i][j] = tmp;
+                    mejorPuntaje = max(mejorPuntaje, puntaje);
                 }
             }
         }
-        return bestScore;
+        return mejorPuntaje;
     } else {
-        int bestScore = 100;
+        int mejorPuntaje = 100;
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                if (c[i][j] != 'X' && c[i][j] != 'O') {
-                    char tmp = c[i][j];
-                    c[i][j] = 'O';
-                    int score = minimax(c, depth + 1, true);
-                    c[i][j] = tmp;
-                    bestScore = min(bestScore, score);
+                if (tablero[i][j] != 'X' && tablero[i][j] != 'O') {
+                    char tmp = tablero[i][j];
+                    tablero[i][j] = 'O';
+                    int puntaje = minimax(tablero, profundidad + 1, true);
+                    tablero[i][j] = tmp;
+                    mejorPuntaje = min(mejorPuntaje, puntaje);
                 }
             }
         }
-        return bestScore;
+        return mejorPuntaje;
     }
 }
 
